@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="BigStar ELT Pipeline" width="100%">
+</p>
+
 # BigStar ELT Data Pipeline
 
 **An end-to-end ELT pipeline that moves data from PostgreSQL through Airbyte into BigQuery, then transforms it with dbt** — demonstrating a modern data stack pattern used in production analytics engineering.
