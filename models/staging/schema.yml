@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned, 1:1 view of raw customers — snake_case, typed."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: email
+        description: "Lower-cased email address."
+
+  - name: stg_orders
+    description: "Cleaned, 1:1 view of raw orders."
+    columns:
+      - name: order_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "FK to stg_customers."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: status
+        description: "Order lifecycle status."
+        tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'cancelled', 'returned']

@@ -18,10 +18,10 @@
 
 ```mermaid
 flowchart LR
-    A[(PostgreSQL\nsource DB)] -->|Airbyte connector\nfull refresh / incremental| B[(BigQuery\nraw layer)]
-    B --> C[dbt\nstaging models]
-    C --> D[dbt\nmarts / facts / dims]
-    D --> E[Analytics\nBI tools]
+    A[(PostgreSQL<br/>source DB)] -->|Airbyte connector<br/>full refresh / incremental| B[(BigQuery<br/>raw layer)]
+    B --> C[dbt<br/>staging models]
+    C --> D[dbt<br/>marts / facts / dims]
+    D --> E[Analytics<br/>BI tools]
 ```
 
 **Flow:** Airbyte syncs tables from PostgreSQL into BigQuery's raw layer → dbt staging models clean and standardize the raw data → dbt mart models build business-ready facts and dimensions → BI tools query the marts directly.
@@ -45,14 +45,25 @@ This follows the **ELT pattern** (Extract, Load, Transform): raw data lands in t
 
 ```
 models/
-├── staging/          # 1:1 source table mirrors, light cleaning
-│   └── stg_*.sql
-├── marts/            # Business-ready aggregations
+├── staging/
+│   ├── sources.yml         # raw Airbyte tables + freshness checks
+│   ├── stg_customers.sql   # 1:1 clean of raw.customers
+│   ├── stg_orders.sql      # 1:1 clean of raw.orders
+│   └── schema.yml          # tests + column docs (unique, not_null, relationships, accepted_values)
+├── marts/
+│   ├── dims/
+│   │   └── dim_customers.sql   # customer + lifetime order metrics
 │   ├── facts/
-│   └── dims/
-dbt_project.yml       # dbt project config
-profiles.yml.example  # BigQuery connection template
+│   │   └── fct_orders.sql      # order-grain fact, incremental (merge)
+│   └── schema.yml
+dbt_project.yml          # dbt project config
+packages.yml             # dbt_utils dependency
+profiles.yml.example     # BigQuery connection template
 ```
+
+> The models are the **transformation layer**. They run on top of the `raw`
+> dataset that Airbyte lands in BigQuery — point `sources.yml` at your raw
+> tables (or any equivalent `customers` / `orders` tables) and `dbt build`.
 
 ---
 

@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      Raw tables landed in BigQuery by Airbyte from the PostgreSQL source.
+      Airbyte owns this layer; dbt only reads from it.
+    database: "{{ env_var('DBT_GCP_PROJECT') }}"
+    schema: raw
+    # Airbyte stamps every row with its extraction time — use it for freshness.
+    loaded_at_field: _airbyte_extracted_at
+    freshness:
+      warn_after: { count: 24, period: hour }
+      error_after: { count: 48, period: hour }
+    tables:
+      - name: customers
+        description: "Operational customer records."
+      - name: orders
+        description: "Operational order records."

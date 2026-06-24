@@ -1,0 +1,26 @@
+name: 'bigstar'
+version: '1.0.0'
+config-version: 2
+
+# This profile name must match an entry in your ~/.dbt/profiles.yml
+# (see profiles.yml.example for a BigQuery template).
+profile: 'bigstar'
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  bigstar:
+    staging:
+      +materialized: view
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: marts

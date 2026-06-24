@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "One row per customer with lifetime order metrics."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: lifetime_value
+        description: "Sum of non-cancelled/returned order amounts."
+
+  - name: fct_orders
+    description: "Order-grain fact table, incrementally materialized."
+    columns:
+      - name: order_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "FK to dim_customers."
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
